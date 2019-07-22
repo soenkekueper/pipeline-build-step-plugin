@@ -63,7 +63,7 @@ public class BuildTriggerStepExecution extends AbstractStepExecutionImpl {
     @Override
     public boolean start() throws Exception {
         String job = step.getJob();
-        Item item = Jenkins.getActiveInstance().getItem(job, invokingRun.getParent(), Item.class);
+        Item item = Jenkins.get().getItem(job, invokingRun.getParent(), Item.class);
         if (item == null) {
             throw new AbortException("No item named " + job + " found");
         }
@@ -128,9 +128,9 @@ public class BuildTriggerStepExecution extends AbstractStepExecutionImpl {
                 }
             }
             if (quietPeriod == null) {
-                quietPeriod = Jenkins.getActiveInstance().getQuietPeriod();
+                quietPeriod = Jenkins.get().getQuietPeriod();
             }
-            ScheduleResult scheduleResult = Jenkins.getActiveInstance().getQueue().schedule2(task, quietPeriod,actions);
+            ScheduleResult scheduleResult = Jenkins.get().getQueue().schedule2(task, quietPeriod,actions);
             if (scheduleResult.isRefused()) {
                 throw new AbortException("Failed to trigger build of " + item.getFullName());
             }
@@ -265,7 +265,7 @@ public class BuildTriggerStepExecution extends AbstractStepExecutionImpl {
                 }
             }
         }
-        for (Computer c : Jenkins.getActiveInstance().getComputers()) {
+        for (Computer c : Jenkins.get().getComputers()) {
             for (Executor e : c.getExecutors()) {
                 String r = running(e);
                 if (r != null) {
