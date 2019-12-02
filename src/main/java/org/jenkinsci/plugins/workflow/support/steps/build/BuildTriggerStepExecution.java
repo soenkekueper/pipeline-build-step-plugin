@@ -152,7 +152,7 @@ public class BuildTriggerStepExecution extends AbstractStepExecutionImpl {
         }
     }
 
-    private List<ParameterValue> completeDefaultParameters(List<ParameterValue> parameters, Job<?,?> project) throws AbortException {
+    static List<ParameterValue> completeDefaultParameters(List<ParameterValue> parameters, Job<?,?> project) throws AbortException {
         Map<String,ParameterValue> allParameters = new HashMap<>();
         for (ParameterValue pv : parameters) {
             allParameters.put(pv.getName(), pv);
