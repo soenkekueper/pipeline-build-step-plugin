@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.workflow.support.steps.build;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -14,6 +15,7 @@ import hudson.model.Job;
 import hudson.model.ParameterValue;
 import hudson.model.Queue;
 import hudson.model.Run;
+import hudson.model.TaskListener;
 import jenkins.model.Jenkins;
 import jenkins.model.ParameterizedJobMixIn;
 
@@ -26,8 +28,10 @@ public class AddTriggerBuildLinkStepExecution extends StepExecution {
 
     private transient Run<?,?> invokingRun;
     private transient FlowNode node;
+    private transient PrintStream logger;
 
     private final AddTriggerBuildLinkStep step;
+
 
     public AddTriggerBuildLinkStepExecution(
             final StepContext context,
@@ -35,6 +39,7 @@ public class AddTriggerBuildLinkStepExecution extends StepExecution {
         super(context);
         this.invokingRun = context.get(Run.class);
         this.node = context.get(FlowNode.class);
+        this.logger = context.get(TaskListener.class).getLogger();
         this.step = step;
     }
 
@@ -53,7 +58,7 @@ public class AddTriggerBuildLinkStepExecution extends StepExecution {
             final ParameterizedJobMixIn.ParameterizedJob project = (ParameterizedJobMixIn.ParameterizedJob) item;
 
             if (parameters != null) {
-                parameters = BuildTriggerStepExecution.completeDefaultParameters(parameters, (Job) project);
+                parameters = BuildTriggerStepExecution.completeDefaultParameters(parameters, (Job) project, invokingRun, logger);
             }
 
         } else if (item instanceof Queue.Task){

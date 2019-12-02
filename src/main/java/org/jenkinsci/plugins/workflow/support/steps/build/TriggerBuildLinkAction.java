@@ -101,17 +101,13 @@ public final class TriggerBuildLinkAction implements Action {
                     actions.add(new ParametersAction(parameters));
                 }
                 
-                int quietPeriod = project.getQuietPeriod();
-                QueueTaskFuture<?> f = new ParameterizedJobMixIn() {
-                    @Override
-                    protected Job asJob() {
-                        return (Job) project;
-                    }
-                }.scheduleBuild2(quietPeriod, actions.toArray(new Action[actions.size()]));
-                
-                if (f == null) {
+                Queue.Item queueItem =
+                    ParameterizedJobMixIn.scheduleBuild2(
+                        (Job<?, ?>) project, -1, actions.toArray(new Action[actions.size()]));
+                if (queueItem == null || queueItem.getFuture() == null) {
                     throw new AbortException("Failed to trigger build of " + project.getFullName());
                 }
+                
             } else if (item instanceof Queue.Task){
                 if (parameters != null && !parameters.isEmpty()) {
                     throw new AbortException("Item type does not support parameters");
